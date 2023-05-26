@@ -1,8 +1,17 @@
+// INIT express app
 const express = require("express");
 const app = express();
 
+// Import Entity
+const Book = require("./models/book.model");
+
+// Connect DB
+require("./config/db");
+
+// Make req readable
 app.use(express.json());
 
+// CrossOrigine
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -16,52 +25,27 @@ app.use((req, res, next) => {
   next();
 });
 
+// POST controller
 app.post("/api/stuff", (req, res, next) => {
-  console.log(req.body);
-  // const stuff = [
-  //   {
-  //     _id: "oeihfzeoi",
-  //     title: "Mon premier objet",
-  //     description: "Les infos de mon premier objet",
-  //     imageUrl:
-  //       "https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg",
-  //     price: 4900,
-  //     userId: "qsomihvqios",
-  //   },
-  //   {
-  //     _id: "oeihfzeomoihi",
-  //     title: "Mon deuxième objet",
-  //     description: "Les infos de mon deuxième objet",
-  //     imageUrl:
-  //       "https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg",
-  //     price: 2900,
-  //     userId: "qsomihvqios",
-  //   },
-  // ];
-  res.status(201).json(req.body);
+  const book = new Book({ ...req.body });
+  book
+    .save()
+    .then(() => res.status(201).json({ message: "Objet enregistré !" }))
+    .catch((error) => res.status(400).json({ error }));
 });
+
+// GET by id controller
+app.get("/api/stuff/:id", (req, res, next) => {
+  Thing.findOne({ _id: req.params.id })
+    .then((thing) => res.status(200).json(thing))
+    .catch((error) => res.status(404).json({ error }));
+});
+
+// GET controller
 app.get("/api/stuff", (req, res, next) => {
-  const stuff = [
-    {
-      _id: "oeihfzeoi",
-      title: "Mon premier objet",
-      description: "Les infos de mon premier objet",
-      imageUrl:
-        "https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg",
-      price: 4900,
-      userId: "qsomihvqios",
-    },
-    {
-      _id: "oeihfzeomoihi",
-      title: "Mon deuxième objet",
-      description: "Les infos de mon deuxième objet",
-      imageUrl:
-        "https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg",
-      price: 2900,
-      userId: "qsomihvqios",
-    },
-  ];
-  res.status(200).json(stuff);
+  Book.find()
+    .then((things) => res.status(200).json(things))
+    .catch((error) => res.status(400).json({ error }));
 });
 
 module.exports = app;
