@@ -15,14 +15,14 @@ exports.listAction = async (req, res, next) => {
 // GET BY ID
 exports.getAction = async (req, res, next) => {
   Book.findOne({ _id: req.params.id })
-    .then((thing) => res.status(200).json(thing))
+    .then((book) => res.status(200).json(book))
     .catch((error) => res.status(404).json({ error }));
 };
 
-// GET BY ATTRIBUTES 
+// GET BY ATTRIBUTES
 exports.bestListAction = async (req, res) => {};
 
-// POST 
+// POST
 exports.addAction = async (req, res, next) => {
   const book = new Book({ ...req.body });
   book
@@ -31,11 +31,20 @@ exports.addAction = async (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-// PUT/POST ATTRIBUTES 
+// PUT/POST ATTRIBUTES
 exports.addRatingAction = async (req, res) => {};
 
 // PUT
-exports.editAction = async (req, res) => {};
+exports.editAction = async (req, res, next) => {
+  console.log("ici");
+  Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+    .then((book) => res.status(200).json(book))
+    .catch((error) => res.status(400).json({ error }));
+};
 
 // DELETE
-exports.editAction = async (req, res) => {};
+exports.deleteAction = async (req, res) => {
+  Book.deleteOne({ _id: req.params.id })
+    .then(() => res.status(200).json({ message: "Objet supprimé !" }))
+    .catch((error) => res.status(400).json({ error }));
+};

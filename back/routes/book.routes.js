@@ -6,15 +6,15 @@ const bookController = require("../controller/books.controller");
 router.post("/", bookController.addAction);
 router.post("/:id/rating", bookController.addRatingAction);
 
-// GET
-router.get("/", bookController.listAction);
-router.get("/:id", bookController.getAction);
-router.get("/bestrating", bookController.bestListAction);
-
 // EDIT
 router.put("/:id", bookController.editAction);
 
 // DELETE
-router.delete("/:id", bookController.editAction);
+router.delete("/:id", bookController.deleteAction);
+
+// GET
+router.get("/", bookController.listAction);
+router.get("/:id", bookController.getAction);
+router.get("/bestrating", bookController.bestListAction);
 
 module.exports = router;
