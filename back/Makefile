@@ -1,2 +1,2 @@
 # npm init -y 
-npm i --save express nodemon dotenv mongoose
+npm i --save express nodemon dotenv mongoose mongoose-unique-validator bcrypt jsonwebtoken
