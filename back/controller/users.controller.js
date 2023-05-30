@@ -15,7 +15,7 @@ exports.signupAction = async (req, res) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-exports.loginAction = (req, res, next) => {
+exports.loginAction = (req, res) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {

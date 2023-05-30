@@ -6,14 +6,14 @@ const db = require("../config/db");
 
 // GET
 // GET ALL
-exports.listAction = async (req, res, next) => {
+exports.listAction = async (req, res) => {
   Book.find()
     .then((things) => res.status(200).json(things))
     .catch((error) => res.status(400).json({ error }));
 };
 
 // GET BY ID
-exports.getAction = async (req, res, next) => {
+exports.getAction = async (req, res) => {
   Book.findOne({ _id: req.params.id })
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(404).json({ error }));
@@ -23,7 +23,7 @@ exports.getAction = async (req, res, next) => {
 exports.bestListAction = async (req, res) => {};
 
 // POST
-exports.addAction = async (req, res, next) => {
+exports.addAction = async (req, res) => {
   const book = new Book({ ...req.body });
   book
     .save()
@@ -35,7 +35,7 @@ exports.addAction = async (req, res, next) => {
 exports.addRatingAction = async (req, res) => {};
 
 // PUT
-exports.editAction = async (req, res, next) => {
+exports.editAction = async (req, res) => {
   console.log("ici");
   Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
     .then((book) => res.status(200).json(book))
