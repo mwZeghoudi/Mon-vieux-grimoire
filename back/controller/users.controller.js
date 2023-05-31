@@ -35,7 +35,7 @@ exports.loginAction = (req, res) => {
             userId: user._id,
             token: jwt.sign(
               { userId: user._id }, // Pour empecher les autres user a faire les CRUD
-              "RANDOM_TOKEN_SECRET",
+              process.env.TOKEN_SECRET,
               { expiresIn: "24h" }
             ),
           });
