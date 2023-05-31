@@ -24,7 +24,23 @@ exports.bestListAction = async (req, res) => {};
 
 // POST
 exports.addAction = async (req, res) => {
-  const book = new Book({ ...req.body });
+  const bookObject = JSON.parse(req.body.book);
+  const verifiedId = req.auth.userId;
+  bookObject.ratings[0].userId = verifiedId;
+
+  delete bookObject.userId;
+  delete bookObject._id;
+
+  console.log(bookObject);
+
+  const book = new Book({
+    ...bookObject,
+    userId: verifiedId,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`,
+  });
+
   book
     .save()
     .then(() => res.status(201).json({ message: "Objet enregistré !" }))
