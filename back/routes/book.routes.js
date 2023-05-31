@@ -1,20 +1,21 @@
 const express = require("express");
 const router = express.Router();
+const auth = require("../middleware/auth");
 const bookController = require("../controller/books.controller");
 
 // POST
-router.post("/", bookController.addAction);
-router.post("/:id/rating", bookController.addRatingAction);
+router.post("/", auth, bookController.addAction);
+router.post("/:id/rating", auth, bookController.addRatingAction);
 
 // EDIT
-router.put("/:id", bookController.editAction);
+router.put("/:id", auth, bookController.editAction);
 
 // DELETE
-router.delete("/:id", bookController.deleteAction);
+router.delete("/:id", auth, bookController.deleteAction);
 
 // GET
-router.get("/", bookController.listAction);
-router.get("/:id", bookController.getAction);
-router.get("/bestrating", bookController.bestListAction);
+router.get("/", auth, bookController.listAction);
+router.get("/:id", auth, bookController.getAction);
+router.get("/bestrating", auth, bookController.bestListAction);
 
 module.exports = router;
