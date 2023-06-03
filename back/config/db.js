@@ -3,7 +3,7 @@ require("dotenv").config({ path: "./config/.env" });
 
 mongoose
   .connect(
-    `mongodb+srv://${process.env.DB_ID}:${process.env.DB_PW}@mvg.insgtmy.mongodb.net/`,
+    `mongodb+srv://${process.env.DB_ID}:${process.env.DB_PW}@mvg.insgtmy.mongodb.net/mon-vieux-grimoire`,
     {
       useNewUrlParser: true,
       useUnifiedTopology: true,
