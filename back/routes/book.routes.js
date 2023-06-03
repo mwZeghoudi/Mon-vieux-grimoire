@@ -6,18 +6,18 @@ const auth = require("../middleware/auth");
 const multer = require("../middleware/multer.config");
 
 // POST
-router.post("/", auth, multer, bookController.addAction);
+router.post("/", auth, multer, bookController.addAction); // TESTED
 router.post("/:id/rating", auth, bookController.addRatingAction);
 
 // EDIT
 router.put("/:id", auth, multer, bookController.editAction);
 
 // DELETE
-router.delete("/:id", auth, bookController.deleteAction);
+router.delete("/:id", auth, bookController.deleteAction); //TESTED
 
 // GET
-router.get("/", auth, bookController.listAction);
-router.get("/:id", auth, bookController.getAction);
-router.get("/bestrating", auth, bookController.bestListAction);
+router.get("/", bookController.listAction); //TESTED
+router.get("/:id", bookController.getAction); //TESTED
+router.get("/bestrating", bookController.bestListAction); 
 
 module.exports = router;
