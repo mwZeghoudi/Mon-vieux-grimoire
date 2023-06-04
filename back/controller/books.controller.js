@@ -48,7 +48,48 @@ exports.addAction = async (req, res) => {
 };
 
 // PUT/POST ATTRIBUTES
-exports.addRatingAction = async (req, res) => {};
+exports.addRatingAction = async (req, res) => {
+  try {
+    const book = await Book.findOne({ _id: req.params.id });
+    if (!book) {
+      return res.status(404).json({ error: "Livre non trouvé" });
+    }
+
+    console.log("start");
+    const ratings = book.ratings;
+    let avrRating = 0;
+    let isRated = false;
+
+    ratings.forEach((e, i) => {
+      console.log("forEach");
+      if (e.userId == req.body.userId) {
+        isRated = true;
+        e.grade = req.body.rating;
+      }
+      avrRating += e.grade;
+    });
+
+    if (!isRated) {
+      console.log("is not rated");
+      avrRating += req.body.rating;
+      ratings.push({
+        userId: req.body.userId,
+        grade: req.body.rating,
+      });
+      book.ratings = ratings;
+    }
+
+    avrRating = Math.round(avrRating / book.ratings.length);
+    book.averageRating = avrRating;
+
+    console.log(book);
+    await book.save();
+
+    res.status(200).json({ message: "Votre note est enregistrée !" });
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+};
 
 // PUT
 exports.editAction = async (req, res) => {
