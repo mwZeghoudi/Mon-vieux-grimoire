@@ -20,7 +20,17 @@ exports.getAction = async (req, res) => {
 };
 
 // GET BY ATTRIBUTES
-exports.bestListAction = async (req, res) => {};
+exports.bestListAction = async (req, res) => {
+  try {
+    const books = await Book.find();
+    const sortedBooks = books.sort((a, b) => b.averageRating - a.averageRating);
+    const top3Books = sortedBooks.slice(0, 3);
+
+    res.status(200).json(top3Books);
+  } catch (error) {
+    res.status(400).json({ error });
+  }
+};
 
 // POST
 exports.addAction = async (req, res) => {
@@ -30,8 +40,6 @@ exports.addAction = async (req, res) => {
 
   delete bookObject.userId;
   delete bookObject._id;
-
-  console.log(bookObject);
 
   const book = new Book({
     ...bookObject,
@@ -54,23 +62,17 @@ exports.addRatingAction = async (req, res) => {
     if (!book) {
       return res.status(404).json({ error: "Livre non trouvé" });
     }
-
-    console.log("start");
     const ratings = book.ratings;
     let avrRating = 0;
     let isRated = false;
-
     ratings.forEach((e, i) => {
-      console.log("forEach");
       if (e.userId == req.body.userId) {
         isRated = true;
         e.grade = req.body.rating;
       }
       avrRating += e.grade;
     });
-
     if (!isRated) {
-      console.log("is not rated");
       avrRating += req.body.rating;
       ratings.push({
         userId: req.body.userId,
@@ -79,13 +81,10 @@ exports.addRatingAction = async (req, res) => {
       book.ratings = ratings;
     }
 
-    avrRating = Math.round(avrRating / book.ratings.length);
-    book.averageRating = avrRating;
+    book.averageRating = avrRating / book.ratings.length;
 
-    console.log(book);
     await book.save();
-
-    res.status(200).json({ message: "Votre note est enregistrée !" });
+    res.status(200).json(book);
   } catch (error) {
     res.status(400).json({ error });
   }
@@ -93,7 +92,6 @@ exports.addRatingAction = async (req, res) => {
 
 // PUT
 exports.editAction = async (req, res) => {
-  console.log("ici");
   Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(400).json({ error }));
