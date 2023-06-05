@@ -55,7 +55,7 @@ exports.addAction = async (req, res) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
-// PUT/POST ATTRIBUTES
+// POST Rating
 exports.addRatingAction = async (req, res) => {
   try {
     const book = await Book.findOne({ _id: req.params.id });
@@ -95,6 +95,12 @@ exports.editAction = async (req, res) => {
   let book = req.body;
   if (req.body.book) {
     book = JSON.parse(req.body.book);
+    book = {
+      ...book,
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${
+        req.file.filename
+      }`,
+    };
   }
   Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
     .then((book) => res.status(200).json(book))
