@@ -92,7 +92,11 @@ exports.addRatingAction = async (req, res) => {
 
 // PUT
 exports.editAction = async (req, res) => {
-  Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
+  let book = req.body;
+  if (req.body.book) {
+    book = JSON.parse(req.body.book);
+  }
+  Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(400).json({ error }));
 };
