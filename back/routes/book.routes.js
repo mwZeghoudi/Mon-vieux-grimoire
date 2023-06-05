@@ -10,7 +10,7 @@ router.post("/", auth, multer, bookController.addAction); // TESTED
 router.post("/:id/rating", auth, bookController.addRatingAction); // TESTED
 
 // EDIT
-router.put("/:id", auth, multer, bookController.editAction);
+router.put("/:id", auth, multer, bookController.editAction); //TESTED
 
 // DELETE
 router.delete("/:id", auth, bookController.deleteAction); //TESTED
