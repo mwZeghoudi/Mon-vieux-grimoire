@@ -6,11 +6,23 @@ const auth = require("../middleware/auth");
 const multer = require("../middleware/multer.config");
 
 // POST
-router.post("/", auth, multer, bookController.addAction); // TESTED
+router.post(
+  "/",
+  auth,
+  multer,
+  multer.processImage,
+  bookController.addAction
+); // TESTED
 router.post("/:id/rating", auth, bookController.addRatingAction); // TESTED
 
 // EDIT
-router.put("/:id", auth, multer, bookController.editAction); //TESTED
+router.put(
+  "/:id",
+  auth,
+  multer,
+  multer.processImage,
+  bookController.editAction
+); //TESTED
 
 // DELETE
 router.delete("/:id", auth, bookController.deleteAction); //TESTED
