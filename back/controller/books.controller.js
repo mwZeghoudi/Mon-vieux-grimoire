@@ -9,7 +9,7 @@ const db = require("../config/db");
 // GET ALL
 exports.listAction = async (req, res) => {
   Book.find()
-    .then((book) => res.status(200).json(book))
+    .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
 };
 
@@ -115,7 +115,7 @@ exports.editAction = async (req, res) => {
     .catch((error) => res.status(404).json({ error }));
   
   Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
-    .then((book) => res.status(200).json(book))
+    .then((book) => res.status(200).json({ message: "Objet enregistré !" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
