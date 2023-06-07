@@ -1,5 +1,9 @@
 const multer = require("multer");
 const sharp = require("sharp");
+const fs = require("fs");
+const path = require("path");
+
+
 
 const MIME_TYPES = {
   "image/jpg": "jpg",
@@ -41,16 +45,39 @@ module.exports.processImage = (req, res, next) => {
   }
 
   // Utiliser Sharp pour compresser l'image
-  sharp(req.file.path)
-    .resize(500, null)
-    .toFile(req.file.path.replace(/\.[^.]+$/, ".webp"))
-    .then(() => {
-      next();
-    })
-    .catch((error) => {
-      console.error(error);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors de la compression de l'image." });
-    });
+  if (req.file.mimetype === "image/webp") {
+    // Utiliser Sharp pour redimensionner uniquement
+    const tempFilePath = path.join("images", `${Date.now()}-temp.webp`);
+    sharp(req.file.path)
+      .resize(500, null)
+      .toFile(tempFilePath, (error) => {
+        if (error) {
+          console.error(error);
+          return res
+            .status(500)
+            .json({ error: "Erreur lors du redimensionnement de l'image." });
+        }
+        // Supprimer le fichier d'origine
+        fs.unlinkSync(req.file.path);
+        // Renommer le fichier temporaire avec le même nom que le fichier original
+        fs.renameSync(tempFilePath, req.file.path);
+        next();
+      });
+  } else {
+    sharp(req.file.path)
+      .resize(500, null)
+      .toFile(req.file.path.replace(/\.[^.]+$/, ".webp"))
+      .then(() => {
+        // Supprimer le fichier d'origine
+        fs.unlinkSync(req.file.path);
+        next();
+      })
+      .catch((error) => {
+        console.error(error);
+        return res
+          .status(500)
+          .json({ error: "Erreur lors de la compression de l'image." });
+      });
+  }
 };
+

@@ -1,3 +1,4 @@
+const fs = require("fs");
 // Import Entity
 const Book = require("../models/book.model");
 
@@ -40,13 +41,15 @@ exports.addAction = async (req, res) => {
 
   delete bookObject.userId;
   delete bookObject._id;
+  const filename = req.file.filename;
+  const filenameArray = filename.split(".");
+  filenameArray.pop();
+  const filenameWithoutExtension = filenameArray.join(".");
 
   const book = new Book({
     ...bookObject,
     userId: verifiedId,
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
-    }`,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${filenameWithoutExtension}.webp`,
   });
 
   book
@@ -95,13 +98,22 @@ exports.editAction = async (req, res) => {
   let book = req.body;
   if (req.body.book) {
     book = JSON.parse(req.body.book);
+    const filename = req.file.filename;
+    const filenameArray = filename.split(".");
+    filenameArray.pop();
+    const filenameWithoutExtension = filenameArray.join(".");
     book = {
       ...book,
-      imageUrl: `${req.protocol}://${req.get("host")}/images/${
-        req.file.filename
-      }`,
+      imageUrl: `${req.protocol}://${req.get("host")}/images/${filenameWithoutExtension}.webp`,
     };
   }
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      const filePath = book.imageUrl.split('/images/').pop(0);
+      fs.unlinkSync(`images/${filePath}`);
+    })
+    .catch((error) => res.status(404).json({ error }));
+  
   Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(400).json({ error }));
