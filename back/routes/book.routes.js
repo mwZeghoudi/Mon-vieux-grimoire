@@ -11,7 +11,7 @@ router.post(
   auth,
   multer,
   multer.processImage,
-  bookController.addAction
+  bookController.addBookAction
 ); // TESTED
 router.post("/:id/rating", auth, bookController.addRatingAction); // TESTED
 
@@ -21,15 +21,15 @@ router.put(
   auth,
   multer,
   multer.processImage,
-  bookController.editAction
+  bookController.editOneBookAction
 ); //TESTED
 
 // DELETE
-router.delete("/:id", auth, bookController.deleteAction); //TESTED
+router.delete("/:id", auth, bookController.deleteOneBookAction); //TESTED
 
 // GET
-router.get("/", bookController.listAction); //TESTED
-router.get("/bestrating", bookController.bestListAction); //TESTED
-router.get("/:id", bookController.getAction); //TESTED
+router.get("/", bookController.listBooksAction); //TESTED
+router.get("/bestrating", bookController.bestRatingsListAction); //TESTED
+router.get("/:id", bookController.getBookAction); //TESTED
 
 module.exports = router;

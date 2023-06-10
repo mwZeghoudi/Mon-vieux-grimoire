@@ -7,21 +7,21 @@ const db = require("../config/db");
 
 // GET
 // GET ALL
-exports.listAction = async (req, res) => {
+exports.listBooksAction = async (req, res) => {
   Book.find()
     .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
 };
 
 // GET BY ID
-exports.getAction = async (req, res) => {
+exports.getBookAction = async (req, res) => {
   Book.findOne({ _id: req.params.id })
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(404).json({ error }));
 };
 
 // GET BY ATTRIBUTES
-exports.bestListAction = async (req, res) => {
+exports.bestRatingsListAction = async (req, res) => {
   try {
     const books = await Book.find();
     const sortedBooks = books.sort((a, b) => b.averageRating - a.averageRating);
@@ -34,7 +34,7 @@ exports.bestListAction = async (req, res) => {
 };
 
 // POST
-exports.addAction = async (req, res) => {
+exports.addBookAction = async (req, res) => {
   const bookObject = JSON.parse(req.body.book);
   const verifiedId = req.auth.userId;
   bookObject.ratings[0].userId = verifiedId;
@@ -49,7 +49,9 @@ exports.addAction = async (req, res) => {
   const book = new Book({
     ...bookObject,
     userId: verifiedId,
-    imageUrl: `${req.protocol}://${req.get("host")}/images/${filenameWithoutExtension}.webp`,
+    imageUrl: `${req.protocol}://${req.get(
+      "host"
+    )}/images/${filenameWithoutExtension}.webp`,
   });
 
   book
@@ -94,7 +96,7 @@ exports.addRatingAction = async (req, res) => {
 };
 
 // PUT
-exports.editAction = async (req, res) => {
+exports.editOneBookAction = async (req, res) => {
   let book = req.body;
   if (req.body.book) {
     book = JSON.parse(req.body.book);
@@ -104,23 +106,25 @@ exports.editAction = async (req, res) => {
     const filenameWithoutExtension = filenameArray.join(".");
     book = {
       ...book,
-      imageUrl: `${req.protocol}://${req.get("host")}/images/${filenameWithoutExtension}.webp`,
+      imageUrl: `${req.protocol}://${req.get(
+        "host"
+      )}/images/${filenameWithoutExtension}.webp`,
     };
   }
   Book.findOne({ _id: req.params.id })
     .then((book) => {
-      const filePath = book.imageUrl.split('/images/').pop(0);
+      const filePath = book.imageUrl.split("/images/").pop(0);
       fs.unlinkSync(`images/${filePath}`);
     })
     .catch((error) => res.status(404).json({ error }));
-  
+
   Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
     .then((book) => res.status(200).json({ message: "Objet enregistré !" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
 // DELETE
-exports.deleteAction = async (req, res) => {
+exports.deleteOneBookAction = async (req, res) => {
   Book.deleteOne({ _id: req.params.id })
     .then(() => res.status(200).json({ message: "Objet supprimé !" }))
     .catch((error) => res.status(400).json({ error }));
