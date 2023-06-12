@@ -124,7 +124,14 @@ exports.editOneBookAction = async (req, res) => {
 };
 
 // DELETE
-exports.deleteOneBookAction = async (req, res) => {
+exports.deleteOneBookAction = async (req, res, next) => {
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      const filePath = book.imageUrl.split("/images/").pop(0);
+      fs.unlinkSync(`images/${filePath}`);
+    })
+    .catch((error) => res.status(404).json({ error }));
+
   Book.deleteOne({ _id: req.params.id })
     .then(() => res.status(200).json({ message: "Objet supprimé !" }))
     .catch((error) => res.status(400).json({ error }));

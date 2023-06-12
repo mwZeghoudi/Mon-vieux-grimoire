@@ -3,8 +3,6 @@ const sharp = require("sharp");
 const fs = require("fs");
 const path = require("path");
 
-
-
 const MIME_TYPES = {
   "image/jpg": "jpg",
   "image/jpeg": "jpg",
@@ -80,4 +78,3 @@ module.exports.processImage = (req, res, next) => {
       });
   }
 };
-
