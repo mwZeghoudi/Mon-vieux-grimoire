@@ -103,6 +103,12 @@ exports.addRatingAction = async (req, res) => {
 exports.editOneBookAction = async (req, res) => {
   let book = req.body;
   if (req.body.book) {
+    Book.findOne({ _id: req.params.id })
+      .then((book) => {
+        const filePath = book.imageUrl.split("/images/").pop(0);
+        fs.unlinkSync(`images/${filePath}`);
+      })
+      .catch((error) => console.log({ error }));
     book = JSON.parse(req.body.book);
     const filename = req.file.filename;
     const filenameArray = filename.split(".");
@@ -114,12 +120,6 @@ exports.editOneBookAction = async (req, res) => {
         "host"
       )}/images/${filenameWithoutExtension}.webp`,
     };
-    Book.findOne({ _id: req.params.id })
-      .then((book) => {
-        const filePath = book.imageUrl.split("/images/").pop(0);
-        fs.unlinkSync(`images/${filePath}`);
-      })
-      .catch((error) => console.log({ error }));
   }
 
   Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
