@@ -36,12 +36,16 @@ exports.bestRatingsListAction = async (req, res) => {
 // POST
 exports.addBookAction = async (req, res) => {
   const bookObject = JSON.parse(req.body.book);
+  // if (req.nowDate) {
+  //   console.log("webp");
+  // }
   const verifiedId = req.auth.userId;
   bookObject.ratings[0].userId = verifiedId;
 
   delete bookObject.userId;
   delete bookObject._id;
   const filename = req.file.filename;
+  // To always target webp
   const filenameArray = filename.split(".");
   filenameArray.pop();
   const filenameWithoutExtension = filenameArray.join(".");
@@ -110,13 +114,13 @@ exports.editOneBookAction = async (req, res) => {
         "host"
       )}/images/${filenameWithoutExtension}.webp`,
     };
+    Book.findOne({ _id: req.params.id })
+      .then((book) => {
+        const filePath = book.imageUrl.split("/images/").pop(0);
+        fs.unlinkSync(`images/${filePath}`);
+      })
+      .catch((error) => console.log({ error }));
   }
-  Book.findOne({ _id: req.params.id })
-    .then((book) => {
-      const filePath = book.imageUrl.split("/images/").pop(0);
-      fs.unlinkSync(`images/${filePath}`);
-    })
-    .catch((error) => res.status(404).json({ error }));
 
   Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
     .then((book) => res.status(200).json({ message: "Objet enregistré !" }))
@@ -130,7 +134,7 @@ exports.deleteOneBookAction = async (req, res, next) => {
       const filePath = book.imageUrl.split("/images/").pop(0);
       fs.unlinkSync(`images/${filePath}`);
     })
-    .catch((error) => res.status(404).json({ error }));
+    .catch((error) => console.log({ error }));
 
   Book.deleteOne({ _id: req.params.id })
     .then(() => res.status(200).json({ message: "Objet supprimé !" }))

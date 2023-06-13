@@ -10,6 +10,8 @@ const MIME_TYPES = {
   "image/webp": "webp",
 };
 
+const nowDate = Date.now();
+
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "images");
@@ -20,7 +22,7 @@ const storage = multer.diskStorage({
     filenameArray.pop();
     const filenameWithoutExtension = filenameArray.join(".");
     const extension = MIME_TYPES[file.mimetype];
-    callback(null, `${filenameWithoutExtension}-${Date.now()}.${extension}`);
+    callback(null, `${filenameWithoutExtension}-${nowDate}.${extension}`);
   },
 });
 
@@ -44,8 +46,9 @@ module.exports.processImage = (req, res, next) => {
 
   // Utiliser Sharp pour compresser l'image
   if (req.file.mimetype === "image/webp") {
+    req.nowDate = nowDate; // Ajouter nowDate à l'objet req
     // Utiliser Sharp pour redimensionner uniquement
-    const tempFilePath = path.join("images", `${Date.now()}-temp.webp`);
+    const tempFilePath = path.join("images", `${nowDate}-temp.webp`);
     sharp(req.file.path)
       .resize(500, null)
       .toFile(tempFilePath, (error) => {
@@ -55,10 +58,10 @@ module.exports.processImage = (req, res, next) => {
             .status(500)
             .json({ error: "Erreur lors du redimensionnement de l'image." });
         }
-        // Supprimer le fichier d'origine
-        fs.unlinkSync(req.file.path);
-        // Renommer le fichier temporaire avec le même nom que le fichier original
-        fs.renameSync(tempFilePath, req.file.path);
+        // // Supprimer le fichier d'origine
+        // fs.unlinkSync(req.file.path);
+        // // Renommer le fichier temporaire avec le même nom que le fichier original
+        // fs.renameSync(tempFilePath, req.file.path);
         next();
       });
   } else {
