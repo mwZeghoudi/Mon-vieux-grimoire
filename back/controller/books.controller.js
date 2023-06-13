@@ -5,6 +5,11 @@ const Book = require("../models/book.model");
 // Connect DB
 const db = require("../config/db");
 
+// Check year input only numbers
+function isNumeric(input) {
+  return /^\d+$/.test(input);
+}
+
 // GET
 // GET ALL
 exports.listBooksAction = async (req, res) => {
@@ -36,9 +41,6 @@ exports.bestRatingsListAction = async (req, res) => {
 // POST
 exports.addBookAction = async (req, res) => {
   const bookObject = JSON.parse(req.body.book);
-  // if (req.nowDate) {
-  //   console.log("webp");
-  // }
   const verifiedId = req.auth.userId;
   bookObject.ratings[0].userId = verifiedId;
 
@@ -49,14 +51,20 @@ exports.addBookAction = async (req, res) => {
   const filenameArray = filename.split(".");
   filenameArray.pop();
   const filenameWithoutExtension = filenameArray.join(".");
+  const newFile = `images/${filenameWithoutExtension}.webp`;
 
   const book = new Book({
     ...bookObject,
     userId: verifiedId,
-    imageUrl: `${req.protocol}://${req.get(
-      "host"
-    )}/images/${filenameWithoutExtension}.webp`,
+    imageUrl: `${req.protocol}://${req.get("host")}${newFile}`,
   });
+
+  if (!isNumeric(bookObject.year)) {
+    fs.unlinkSync(newFile);
+    res
+      .status(400)
+      .json({ message: "Le format de l'année n'est pas correcte" });
+  }
 
   book
     .save()
@@ -102,24 +110,36 @@ exports.addRatingAction = async (req, res) => {
 // PUT
 exports.editOneBookAction = async (req, res) => {
   let book = req.body;
+  let newFile = null;
+
   if (req.body.book) {
+    book = JSON.parse(req.body.book);
+    const filename = req.file.filename;
+    const filenameArray = filename.split(".");
+    filenameArray.pop();
+    const filenameWithoutExtension = filenameArray.join(".");
+    newFile = `images/${filenameWithoutExtension}.webp`;
+
+    book = {
+      ...book,
+      imageUrl: `${req.protocol}://${req.get("host")}/${newFile}`,
+    };
+
+    // Delete old picture
     Book.findOne({ _id: req.params.id })
       .then((book) => {
         const filePath = book.imageUrl.split("/images/").pop(0);
         fs.unlinkSync(`images/${filePath}`);
       })
       .catch((error) => console.log({ error }));
-    book = JSON.parse(req.body.book);
-    const filename = req.file.filename;
-    const filenameArray = filename.split(".");
-    filenameArray.pop();
-    const filenameWithoutExtension = filenameArray.join(".");
-    book = {
-      ...book,
-      imageUrl: `${req.protocol}://${req.get(
-        "host"
-      )}/images/${filenameWithoutExtension}.webp`,
-    };
+  }
+
+  // If not correct delete current picture
+  if (!isNumeric(book.year)) {
+    newFile ? fs.unlinkSync(newFile) : null;
+    res
+      .status(400)
+      .json({ message: "Le format de l'année n'est pas correcte" });
   }
 
   Book.updateOne({ _id: req.params.id }, { ...book, _id: req.params.id })
