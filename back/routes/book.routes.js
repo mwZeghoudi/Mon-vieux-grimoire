@@ -4,10 +4,12 @@ const bookController = require("../controller/books.controller");
 
 const auth = require("../middleware/auth");
 const multer = require("../middleware/multer.config");
+const validateInputs = require("../middleware/req.validator");
 
 // POST
 router.post(
   "/",
+  validateInputs,
   auth,
   multer,
   multer.processImage,
@@ -18,6 +20,7 @@ router.post("/:id/rating", auth, bookController.addRatingAction); // TESTED
 // EDIT
 router.put(
   "/:id",
+  validateInputs,
   auth,
   multer,
   multer.processImage,
