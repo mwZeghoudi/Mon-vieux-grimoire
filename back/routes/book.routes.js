@@ -9,9 +9,9 @@ const validateInputs = require("../middleware/req.validator");
 // POST
 router.post(
   "/",
-  validateInputs,
   auth,
   multer,
+  validateInputs,
   multer.processImage,
   bookController.addBookAction
 ); // TESTED
@@ -20,9 +20,9 @@ router.post("/:id/rating", auth, bookController.addRatingAction); // TESTED
 // EDIT
 router.put(
   "/:id",
-  validateInputs,
   auth,
   multer,
+  validateInputs,
   multer.processImage,
   bookController.editOneBookAction
 ); //TESTED
