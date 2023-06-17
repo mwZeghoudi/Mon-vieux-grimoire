@@ -1,7 +1,8 @@
 const fs = require("fs");
 
 module.exports = (req, res, next) => {
-  const emailRegex = /^\S+@\S+\.[a-zA-Z]{3}$/;
+  const emailRegex = /^\S+@\S+\.[a-zA-Z]{2,3}$/;
+  const passwordRegex = /^\S+$/;
   const imageFormatRegex = /\.(jpg|jpeg|png|webp)$/i;
   const yearRegex = /^\d{4}$/;
 
@@ -16,9 +17,15 @@ module.exports = (req, res, next) => {
   }
 
   // Validation du contenu des input text
-  // reqObject.title.replace(/[^a-zA-Z0-9\s]/g, "");
-  // reqObject.author.replace(/[^a-zA-Z0-9\s]/g, "");
-  // reqObject.genre.replace(/[^a-zA-Z0-9\s]/g, "");
+  if (reqObject.title || reqObject.author || reqObject.genre) {
+    const filteredTitle = reqObject.title.replace(/[^a-zA-Z0-9\s]/g, "");
+    const filteredAuthor = reqObject.author.replace(/[^a-zA-Z0-9\s]/g, "");
+    const filteredGenre = reqObject.genre.replace(/[^a-zA-Z0-9\s]/g, "");
+
+    reqObject.title = filteredTitle;
+    reqObject.author = filteredAuthor;
+    reqObject.genre = filteredGenre;
+  }
 
   // Validation de l'email si présent
   if (reqObject.email && !emailRegex.test(reqObject.email)) {
@@ -26,6 +33,10 @@ module.exports = (req, res, next) => {
     return res.status(400).json({ error: "Format d'email invalide." });
   }
 
+  if (reqObject.password && !passwordRegex.test(reqObject.password)) {
+    // Gérez l'erreur de mot de passe invalide (contenant des espaces)
+    return res.status(400).json({ error: "Format du mot de passe invalide." });
+  }
   // Validation de l'année si présente
   if (
     reqObject.year &&

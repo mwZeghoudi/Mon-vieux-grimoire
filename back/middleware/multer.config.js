@@ -30,13 +30,12 @@ module.exports = upload;
 
 // Middleware de traitement d'image
 module.exports.processImage = (req, res, next) => {
-  if (!req.file && req.method === "POST") {
+  if (!req.file && req.method == "POST") {
     // Aucun fichier image trouvé
     return res.status(400).json({ error: "Aucun fichier image trouvé." });
-  }
-  if (!req.file && req.method === "PUT") {
+  } else if (!req.file && req.method == "PUT") {
     // Aucun fichier image trouvé
-    next();
+    return next();
   }
 
   // Vérifier si le format d'image est pris en charge
