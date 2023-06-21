@@ -11,7 +11,6 @@ module.exports = (req, res, next) => {
     reqObject = JSON.parse(req.body.book);
   }
   function deleteImage() {
-    console.log(req.file.path);
     fs.unlinkSync(req.file.path);
   }
 
@@ -50,6 +49,6 @@ module.exports = (req, res, next) => {
         .json({ error: "Format de fichier d'image non pris en charge." });
     }
   }
-
+  req.controledBody = reqObject;
   next();
 };

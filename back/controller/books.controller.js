@@ -35,7 +35,7 @@ exports.bestRatingsListAction = async (req, res) => {
 
 // POST
 exports.addBookAction = async (req, res) => {
-  const bookObject = JSON.parse(req.body.book);
+  const bookObject = req.controledBody;
   const verifiedId = req.auth.userId;
   bookObject.ratings[0].userId = verifiedId;
 
@@ -98,7 +98,7 @@ exports.addRatingAction = async (req, res) => {
 
 // PUT
 exports.editOneBookAction = async (req, res) => {
-  let book = req.body;
+  let book = req.controledBody;
   if (req.body.book) {
     Book.findOne({ _id: req.params.id })
       .then((book) => {
@@ -106,7 +106,6 @@ exports.editOneBookAction = async (req, res) => {
         fs.unlinkSync(`images/${filePath}`);
       })
       .catch((error) => console.log({ error }));
-    book = JSON.parse(req.body.book);
     const filename = req.file.filename;
     const filenameArray = filename.split(".");
     filenameArray.pop();
