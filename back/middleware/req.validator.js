@@ -2,7 +2,7 @@ const fs = require("fs");
 const emailRegex = /^\S+@\S+\.[a-zA-Z]{2,3}$/;
 const passwordRegex = /^\S+$/;
 const imageFormatRegex = /\.(jpg|jpeg|png|webp)$/i;
-const yearRegex = /^\d{4}$/;
+const yearRegex = /^[0-9]{4}$/;
 
 module.exports = (req, res, next) => {
 
@@ -28,7 +28,7 @@ module.exports = (req, res, next) => {
 
   if (
     reqObject.year &&
-    !yearRegex.test(reqObject.year) &&
+    !yearRegex.test(reqObject.year) ||
     reqObject.year.length !== 4
   ) {
     req.body.book ? deleteImage() : null;
