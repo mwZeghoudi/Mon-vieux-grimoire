@@ -26,28 +26,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single("image");
 
+// Middleware catch and save picture
 module.exports = upload;
 
-// Middleware de traitement d'image
+// Middleware picture settings
 module.exports.processImage = (req, res, next) => {
+  // No file found
   if (!req.file && req.method == "POST") {
-    // Aucun fichier image trouvé
     return res.status(400).json({ error: "Aucun fichier image trouvé." });
   } else if (!req.file && req.method == "PUT") {
-    // Aucun fichier image trouvé
     return next();
   }
 
-  // Vérifier si le format d'image est pris en charge
   if (!Object.keys(MIME_TYPES).includes(req.file.mimetype)) {
     return res
       .status(400)
       .json({ error: "Format d'image non pris en charge." });
   }
 
-  // Utiliser Sharp pour compresser l'image
+  // Use Sharp to edit pictures
   if (req.file.mimetype === "image/webp") {
-    // Utiliser Sharp pour redimensionner uniquement
+    // Only resize 
     const tempFilePath = path.join("images", `${Date.now()}-temp.webp`);
     sharp(req.file.path)
       .resize(500, null)
@@ -56,20 +55,20 @@ module.exports.processImage = (req, res, next) => {
           console.error(error);
           return res
             .status(500)
-            .json({ error: "Erreur lors du redimensionnement de l'image." });
+            .json({ error: "Erreur lors de la compression de l'image." });
         }
-        // Supprimer le fichier d'origine
+        // Delete original file and rename the new one 
         fs.unlinkSync(req.file.path);
-        // Renommer le fichier temporaire avec le même nom que le fichier original
         fs.renameSync(tempFilePath, req.file.path);
         next();
       });
   } else {
+    // Resize and change mimetype to webp
     sharp(req.file.path)
       .resize(500, null)
       .toFile(req.file.path.replace(/\.[^.]+$/, ".webp"))
       .then(() => {
-        // Supprimer le fichier d'origine
+        // Delete original file
         fs.unlinkSync(req.file.path);
         next();
       })

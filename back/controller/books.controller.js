@@ -5,7 +5,7 @@ const Book = require("../models/book.model");
 // Connect DB
 const db = require("../config/db");
 
-// GET
+// GETTERS
 // GET ALL
 exports.listBooksAction = async (req, res) => {
   Book.find()
@@ -42,7 +42,6 @@ exports.addBookAction = async (req, res) => {
   delete bookObject.userId;
   delete bookObject._id;
   const filename = req.file.filename;
-  // To always target webp
   const filenameArray = filename.split(".");
   filenameArray.pop();
   const filenameWithoutExtension = filenameArray.join(".");
@@ -61,6 +60,7 @@ exports.addBookAction = async (req, res) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
+// SETTERS
 // POST Rating
 exports.addRatingAction = async (req, res) => {
   try {
