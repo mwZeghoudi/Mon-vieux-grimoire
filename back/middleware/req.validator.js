@@ -25,17 +25,18 @@ module.exports = (req, res, next) => {
   if (reqObject.password && !passwordRegex.test(reqObject.password)) {
     return res.status(400).json({ error: "Format du mot de passe invalide." });
   }
-
-  if (
-    reqObject.year &&
-    !yearRegex.test(reqObject.year) ||
-    reqObject.year.length !== 4
-  ) {
-    req.body.book ? deleteImage() : null;
-    return res.status(400).json({
-      error:
-        "Format d'année invalide. Veuillez entrer une année en 4 chiffres.",
-    });
+  if (reqObject.year) {
+    const cleanedYear = reqObject.year.toString().trim();
+    if(
+      !yearRegex.test(cleanedYear) ||
+      cleanedYear.length !== 4
+    ){
+      req.body.book ? deleteImage() : null;
+      return res.status(400).json({
+        error:
+          "Format d'année invalide. Veuillez entrer une année en 4 chiffres.",
+      });
+    }
   }
 
   if (req.files && req.files.image) {
