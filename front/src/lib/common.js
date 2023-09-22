@@ -6,6 +6,7 @@ function formatBooks(bookArray) {
     const newBook = { ...book };
     // eslint-disable-next-line no-underscore-dangle
     newBook.id = newBook._id;
+    newBook.imageUrl = 'https://api.zeghoudi-mohammed-walid.fr/mvg/images/' + newBook.imageUrl.split('/images/')[1]
     return newBook;
   });
 }
@@ -58,6 +59,7 @@ export async function getBook(id) {
     const book = response.data;
     // eslint-disable-next-line no-underscore-dangle
     book.id = book._id;
+    book.imageUrl = 'https://api.zeghoudi-mohammed-walid.fr/mvg/images/' + book.imageUrl.split('/images/')[1]
     return book;
   } catch (err) {
     console.error(err);
